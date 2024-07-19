@@ -1,31 +1,133 @@
+-- funções auxiliares
 pertence :: (Eq t) => t -> [t] -> Bool
 pertence _ [] = False
-pertence e (c : r)
-  | e == c = True
-  | otherwise = pertence e r
--- 6
-removerRepetidos :: (Eq t) => [t] -> [t]
-removerRepetidos [] = []
-removerRepetidos (c : r)
-  | pertence c r = removerRepetidos r
-  | otherwise    = c : removerRepetidos r
+pertence e (c:r)
+    | e == c = True
+    | otherwise = pertence e r
+
+comprimento [] = 0
+comprimento (c:r) = 1 + comprimento r
+
+-- 1
+unica_ocorrencia :: (Eq t) => t -> [t] -> Bool
+unica_ocorrencia _ [] = False
+unica_ocorrencia e (c:r)
+    | e == c    = not(pertence e r)
+    | otherwise = unica_ocorrencia e r
+
+-- 2
+maiores_que :: (Real t) => t -> [t] -> [t]
+maiores_que _ [] = []
+maiores_que n (c:r)
+    | c > n     = c : maiores_que n r
+    | otherwise = maiores_que n r
+
+-- 3
+concatena :: [t] -> [t] -> [t]
+concatena (a:b) c
+    | not (null b) = a : concatena b c
+    | otherwise    = a : c
+
+-- 4
+remove :: (Eq t) => t  -> [t] -> [t]
+remove e (c:r)
+    | e /= c    = c : remove e r
+    | otherwise = r
+
+-- 5
+remover_ultimo :: (Eq t) => [t] -> [t]
+remover_ultimo (c:r)
+    | r /= []   = c : remover_ultimo r
+    | otherwise = []
+
+-- 6 (contém erro: remove à esquerda)
+remover_repetidos :: (Eq t) => [t] -> [t]
+remover_repetidos [] = []
+remover_repetidos (c:r)
+    | pertence c r = remover_repetidos r
+    | otherwise    = c : remover_repetidos r
+
+-- 7 (contém erro: altera a ordem)
+
+maiores :: (Integral t) => Int -> [t] -> [t]
+maiores n l
+    | n > 1     = (maior l) : (maiores (n-1) (remove (maior l) l))
+    | otherwise = [maior l]
+    where maior :: (Integral t) => [t] -> t
+          maior [c] = c
+          maior (c1:c2:r)
+            | c1 >= c2  = maior (c1:r)
+            | otherwise = maior (c2:r)
+
+-- 8
+gera_sequencia :: (Integral t) => t -> [t]
+gera_sequencia n
+    | n > 1  = gera_sequencia (n-1) ++ [n,-n]
+    | n == 1 = [1, -1]
+
+-- 9
+inverte :: [t] -> [t]
+inverte (c:r)
+    | not(null r) = inverte r ++ [c]
+    | otherwise   = [c]
+
+-- 10
+
+-- 11
+somatorio [] = 0
+somatorio (c:r) = c + somatorio r
+
+-- 12
+intercala :: (Eq t) => [t] -> [t] -> [t]
+intercala a b
+    | a == []   = b
+    | b == []   = a
+    | otherwise = head a : (head b : intercala (tail a) (tail b))
+
 -- 13
 uniao :: (Eq t) => [t] -> [t] -> [t]
 uniao l [] = l
 uniao l (c:r)
-  | pertence c l = uniao l r
-  | otherwise    = uniao (l ++ [c]) r
+    | pertence c l = uniao l r
+    | otherwise    = uniao (l ++ [c]) r
+
 -- 14
 interseccao :: (Eq t) => [t] -> [t] -> [t]
 interseccao [] l = []
 interseccao (c:r) l
-  | pertence c l = c : interseccao r l
-  | otherwise    = interseccao r l
+    | pertence c l = c : interseccao r l
+    | otherwise    = interseccao r l
+
+-- 16
+sequencia :: (Integral t) => t -> t -> [t]
+sequencia n m
+    | n > 0     = m : sequencia (n-1) (m+1)
+    | otherwise = []
+
+-- 17
+insere_ordenado :: (Real t) => [t] -> t -> [t]
+insere_ordenado [] n = [n]
+insere_ordenado (c:r) n
+    | n < c     = n:c:r
+    | otherwise = c : insere_ordenado r n
+
+-- 18
+ordenado :: (Real t) => [t] -> Bool
+ordenado [_] = True
+ordenado (c1:c2:r)
+    | c1 > c2   = False
+    | otherwise = ordenado (c2:r)
+
 -- 22
-rodarEsquerda :: (Integral t) => t -> [t] -> [t]
-rodarEsquerda n (c:r)
-  | n > 0     = rodarEsquerda (n-1) (r++[c])
-  | otherwise = c:r
-igual (c:r)
-  | c == 97  = "Sim"
-  | otherwise = "Não"
+rodar_esquerda :: (Integral t) => t -> [t] -> [t]
+rodar_esquerda n (c:r)
+    | n > 0     = rodar_esquerda (n-1) (r++[c])
+    | otherwise = c:r
+
+-- 26
+media l = somatorio l / comprimento l
+
+-- 27
+variancia l@(c:r) = var l / comprimento l
+    where var [] = 0
+          var (c:r) = (c - media l) ^ 2 + var r 
