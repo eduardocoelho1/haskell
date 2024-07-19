@@ -124,6 +124,12 @@ rodar_esquerda n (c:r)
     | n > 0     = rodar_esquerda (n-1) (r++[c])
     | otherwise = c:r
 
+-- 24
+todas_maiusculas :: [Char] -> [Char]
+todas_maiusculas [] = []
+todas_maiusculas (c:r)
+    | fromEnum c >= 97 && fromEnum c <= 122 = toEnum (fromEnum c - 32) : todas_maiusculas r
+    | otherwise                             = c : todas_maiusculas r
 -- 26
 media l = somatorio l / comprimento l
 
@@ -131,3 +137,12 @@ media l = somatorio l / comprimento l
 variancia l@(c:r) = var l / comprimento l
     where var [] = 0
           var (c:r) = (c - media l) ^ 2 + var r 
+
+-- 29 (lista de char vira string)
+seleciona :: [t] -> [Int] -> [t]
+seleciona l [] = []
+seleciona l (x:y) = seleciona_um l x : (seleciona l y)
+    where seleciona_um :: [t] -> Int -> t
+          seleciona_um (c:r) n
+            | n > 1     = seleciona_um r (n-1)
+            | otherwise = c
