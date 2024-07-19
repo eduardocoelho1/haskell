@@ -5,9 +5,6 @@ pertence e (c:r)
     | e == c = True
     | otherwise = pertence e r
 
-comprimento [] = 0
-comprimento (c:r) = 1 + comprimento r
-
 -- 1
 unica_ocorrencia :: (Eq t) => t -> [t] -> Bool
 unica_ocorrencia _ [] = False
@@ -74,15 +71,15 @@ inverte (c:r)
 -- 10
 
 -- 11
+somatorio :: (Real t) => [t] -> t
 somatorio [] = 0
 somatorio (c:r) = c + somatorio r
 
 -- 12
 intercala :: (Eq t) => [t] -> [t] -> [t]
-intercala a b
-    | a == []   = b
-    | b == []   = a
-    | otherwise = head a : (head b : intercala (tail a) (tail b))
+intercala l1 [] = l1
+intercala [] l2 = l2
+intercala l1@(c1:r1) l2@(c2:r2) = c1 : c2 : intercala r1 r2
 
 -- 13
 uniao :: (Eq t) => [t] -> [t] -> [t]
@@ -130,13 +127,23 @@ todas_maiusculas [] = []
 todas_maiusculas (c:r)
     | fromEnum c >= 97 && fromEnum c <= 122 = toEnum (fromEnum c - 32) : todas_maiusculas r
     | otherwise                             = c : todas_maiusculas r
+
 -- 26
+media :: [Double] -> Double
 media l = somatorio l / comprimento l
+    where comprimento :: (Real t) => [t] -> t
+          comprimento [] = 0
+          comprimento (c:r) = 1 + comprimento r
 
 -- 27
-variancia l@(c:r) = var l / comprimento l
-    where var [] = 0
-          var (c:r) = (c - media l) ^ 2 + var r 
+variancia :: [Double] -> Double
+variancia l@(c:r) = var l
+    where var :: [Double] -> Double
+          var [] = 0
+          var (c:r) = (c - media l) ^ 2 / comprimento l + var r
+              where comprimento :: (Real t) => [t] -> t
+                    comprimento [] = 0
+                    comprimento (c:r) = 1 + comprimento r
 
 -- 29 (lista de char vira string)
 seleciona :: [t] -> [Int] -> [t]
