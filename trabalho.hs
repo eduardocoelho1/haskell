@@ -1,15 +1,20 @@
+import Char
 -- funções auxiliares
-pertence :: (Eq t) => t -> [t] -> Bool
-pertence _ [] = False
-pertence e (c:r)
-    | e == c = True
-    | otherwise = pertence e r
+pertence :: (Eq t) => [t] -> (t -> Bool)
+pertence [] _ = False
+pertence (c:r) e
+    | e == c    = True
+    | otherwise = pertence r e
+
+aplica_em_todos :: (a -> b) -> [a] -> [b]
+aplica_em_todos f []    = []
+aplica_em_todos f (c:r) = f c : aplica_em_todos f r
 
 -- 1
 unica_ocorrencia :: (Eq t) => t -> [t] -> Bool
 unica_ocorrencia _ [] = False
 unica_ocorrencia e (c:r)
-    | e == c    = not(pertence e r)
+    | e == c    = not(pertence r e)
     | otherwise = unica_ocorrencia e r
 
 -- 2
@@ -41,7 +46,7 @@ remover_ultimo (c:r)
 remover_repetidos :: (Eq t) => [t] -> [t]
 remover_repetidos [] = []
 remover_repetidos (c:r)
-    | pertence c r = remover_repetidos r
+    | pertence r c = remover_repetidos r
     | otherwise    = c : remover_repetidos r
 
 -- 7 (contém erro: altera a ordem)
@@ -85,15 +90,20 @@ intercala l1@(c1:r1) l2@(c2:r2) = c1 : c2 : intercala r1 r2
 uniao :: (Eq t) => [t] -> [t] -> [t]
 uniao l [] = l
 uniao l (c:r)
-    | pertence c l = uniao l r
+    | pertence l c = uniao l r
     | otherwise    = uniao (l ++ [c]) r
 
 -- 14
 interseccao :: (Eq t) => [t] -> [t] -> [t]
 interseccao [] l = []
 interseccao (c:r) l
-    | pertence c l = c : interseccao r l
+    | pertence l c = c : interseccao r l
     | otherwise    = interseccao r l
+
+-- 15
+mesmos_elementos l r
+    | remover_repetidos (aplica_em_todos (pertence l) r) == [True] && remover_repetidos (aplica_em_todos (pertence r) l) == [True] = True
+    | otherwise                                                                                                                    = False
 
 -- 16
 sequencia :: (Integral t) => t -> t -> [t]
@@ -124,15 +134,13 @@ rodar_esquerda n (c:r)
 -- 24
 todas_maiusculas :: [Char] -> [Char]
 todas_maiusculas [] = []
-todas_maiusculas (c:r)
-    | fromEnum c >= 97 && fromEnum c <= 122 = toEnum (fromEnum c - 32) : todas_maiusculas r
-    | otherwise                             = c : todas_maiusculas r
+todas_maiusculas l = aplica_em_todos Char.toUpper l
 
 -- 26
 media :: [Double] -> Double
 media l = somatorio l / comprimento l
     where comprimento :: (Real t) => [t] -> t
-          comprimento [] = 0
+          comprimento []    = 0
           comprimento (c:r) = 1 + comprimento r
 
 -- 27
@@ -153,3 +161,18 @@ seleciona l (x:y) = seleciona_um l x : (seleciona l y)
           seleciona_um (c:r) n
             | n > 1     = seleciona_um r (n-1)
             | otherwise = c
+
+-- 30
+soma_digitos :: (Integral t) => t -> t
+soma_digitos x
+    | x < 10    = x
+    | otherwise = mod x 10 + soma_digitos (div x 10)
+
+-- 36
+quadrado_perfeito :: (Integral t) => t -> Bool
+quadrado_perfeito 1 = True
+quadrado_perfeito x = qp (div x 2) (-1)
+    where qp a b
+            | a*a == x  = True
+            | a == b    = False
+            | otherwise = qp (div (a + div x a) 2) a
