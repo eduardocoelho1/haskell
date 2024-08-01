@@ -1,6 +1,6 @@
 import Char
 -- funções auxiliares
-pertence :: (Eq t) => [t] -> (t -> Bool)
+pertence :: (Eq t) => [t] -> t -> Bool
 pertence [] _ = False
 pertence (c:r) e
     | e == c    = True
@@ -9,6 +9,15 @@ pertence (c:r) e
 aplica_em_todos :: (a -> b) -> [a] -> [b]
 aplica_em_todos f []    = []
 aplica_em_todos f (c:r) = f c : aplica_em_todos f r
+
+ultimo :: (Eq t) => [t] -> t
+ultimo (c:r)
+    | r == []      = c
+    | otherwise = ultimo r
+
+compara :: (Ord t) => t -> [t] -> (t -> t -> Bool) -> Bool
+compara _ [] func = False
+compara t (c:r) func = (func t c)
 
 -- 1
 unica_ocorrencia :: (Eq t) => t -> [t] -> Bool
@@ -42,12 +51,14 @@ remover_ultimo (c:r)
     | r /= []   = c : remover_ultimo r
     | otherwise = []
 
--- 6 (contém erro: remove à esquerda)
-remover_repetidos :: (Eq t) => [t] -> [t]
-remover_repetidos [] = []
-remover_repetidos (c:r)
-    | pertence r c = remover_repetidos r
-    | otherwise    = c : remover_repetidos r
+-- 6
+remove_repetidos :: (Eq t) => [t] -> [t]
+remove_repetidos [] = []
+remove_repetidos (c:r) = c : remove_repetidos(remove_repetidos' c r)
+        where   remove_repetidos' _ [] = []
+                remove_repetidos' t (c:r)
+                    | c == t = remove_repetidos' t r
+                    | otherwise = c : remove_repetidos' t r
 
 -- 7 (contém erro: altera a ordem)
 
@@ -101,9 +112,13 @@ interseccao (c:r) l
     | otherwise    = interseccao r l
 
 -- 15
-mesmos_elementos l r
-    | remover_repetidos (aplica_em_todos (pertence l) r) == [True] && remover_repetidos (aplica_em_todos (pertence r) l) == [True] = True
-    | otherwise                                                                                                                    = False
+mesmos_elementos :: (Eq t) => [t] -> [t] -> Bool 
+mesmos_elementos l1 l2 = (mesmos_elementos' l1 l2) && (mesmos_elementos' l2 l1)
+    where   mesmos_elementos' :: (Eq t) => [t] -> [t] -> Bool
+            mesmos_elementos' [] _ = True
+            mesmos_elementos' (c:r) l
+                | pertence l c = mesmos_elementos' r l
+                | otherwise    = False
 
 -- 16
 sequencia :: (Integral t) => t -> t -> [t]
@@ -124,6 +139,19 @@ ordenado [_] = True
 ordenado (c1:c2:r)
     | c1 > c2   = False
     | otherwise = ordenado (c2:r)
+
+-- 21 
+picos :: (Ord t) => [t] -> [t]
+picos [] = []
+picos l1@(c:r) = picos'((ultimo l1) : l1 ++ [c])
+        where	picos' [] = []
+                picos' (c:r)
+                    | compara c r (<) = picos'' r
+                    | otherwise = picos' r
+                        where	picos'' [] = []
+                                picos'' (c:r)
+                                    | compara c r (>) = c : picos' r
+                                    | otherwise = picos'' r
 
 -- 22
 rodar_esquerda :: (Integral t) => t -> [t] -> [t]
