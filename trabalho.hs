@@ -1,3 +1,7 @@
+-- 202310175 - Eduardo Cesar Cauduro Coelho
+-- 202310174 - Felipe Geraldo de Oliveira
+-- Grupo 0
+
 import Char
 -- funções auxiliares
 pertence :: (Eq t) => [t] -> t -> Bool
@@ -30,28 +34,29 @@ media l = somatorio l / comprimento l
           comprimento (c:r) = 1 + comprimento r
 
 -- 3
-concatena :: [t] -> [t] -> [t]
-concatena (a:b) c
-    | not (null b) = a : concatena b c
-    | otherwise    = a : c
+concatena :: (Eq t) => [t] -> [t] -> [t]
+concatena [] l = l
+concatena (c:r) l
+    | r /= []   = c:concatena r l
+    | otherwise = c:l
 
 -- 6
-remove_repetidos :: (Eq t) => [t] -> [t]
-remove_repetidos [] = []
-remove_repetidos (c:r) = c : remove_repetidos(remove_repetidos' c r)
-        where   remove_repetidos' _ [] = []
-                remove_repetidos' t (c:r)
-                    | c == t = remove_repetidos' t r
-                    | otherwise = c : remove_repetidos' t r
+remover_repetidos :: (Eq t) => [t] -> [t]
+remover_repetidos [] = []
+remover_repetidos (c:r) = c : remover_repetidos(remover_repetidos' c r)
+        where   remover_repetidos' _ [] = []
+                remover_repetidos' t (c:r)
+                    | c == t = remover_repetidos' t r
+                    | otherwise = c : remover_repetidos' t r
 
 -- 9
-inverte :: [t] -> [t]
+inverte :: (Eq t) => [t] -> [t]
 inverte (c:r)
-    | not(null r) = inverte r ++ [c]
-    | otherwise   = [c]
+    | r /= []   = inverte r ++ [c]
+    | otherwise = [c]
 
 -- 12
-intercala :: (Eq t) => [t] -> [t] -> [t]
+intercala :: [t] -> [t] -> [t]
 intercala l1 [] = l1
 intercala [] l2 = l2
 intercala l1@(c1:r1) l2@(c2:r2) = c1 : c2 : intercala r1 r2
@@ -67,6 +72,7 @@ mesmos_elementos l1 l2 = (mesmos_elementos' l1 l2) && (mesmos_elementos' l2 l1)
 
 -- 18
 ordenado :: (Real t) => [t] -> Bool
+ordenado []  = True
 ordenado [_] = True
 ordenado (c1:c2:r)
     | c1 > c2   = False
@@ -129,8 +135,9 @@ soma_digitos x
 -- 36
 quadrado_perfeito :: (Integral t) => t -> Bool
 quadrado_perfeito 1 = True
-quadrado_perfeito x = quadrado_perfeito' (div x 2) (-1)
-    where quadrado_perfeito' chute anterior
-            | chute*chute == x  = True
-            | chute == anterior = False
-            | otherwise = quadrado_perfeito' (div (chute + div x chute) 2) chute
+quadrado_perfeito x = quadrado_perfeito' (div x 2)
+    where quadrado_perfeito' chute
+            | novo_chute*novo_chute == x = True
+            | novo_chute == chute        = False
+            | otherwise                  = quadrado_perfeito' novo_chute
+                where novo_chute = div (chute + div x chute) 2 
